@@ -2,11 +2,18 @@
 const hamburger = document.getElementById('hamburger');
 const navMenu = document.getElementById('navMenu');
 const navLinks = document.querySelectorAll('.nav-link');
+const body = document.body;
 
 if (hamburger) {
     hamburger.addEventListener('click', () => {
         navMenu.classList.toggle('active');
         hamburger.classList.toggle('active');
+        // Empêcher le scroll du body quand le menu est ouvert
+        if (navMenu.classList.contains('active')) {
+            body.style.overflow = 'hidden';
+        } else {
+            body.style.overflow = '';
+        }
     });
 }
 
@@ -17,7 +24,30 @@ navLinks.forEach(link => {
         if (hamburger) {
             hamburger.classList.remove('active');
         }
+        body.style.overflow = '';
     });
+});
+
+// Fermer le menu si on clique en dehors
+document.addEventListener('click', (e) => {
+    if (navMenu && hamburger && navMenu.classList.contains('active')) {
+        if (!navMenu.contains(e.target) && !hamburger.contains(e.target)) {
+            navMenu.classList.remove('active');
+            hamburger.classList.remove('active');
+            body.style.overflow = '';
+        }
+    }
+});
+
+// Fermer le menu au resize si on passe en desktop
+window.addEventListener('resize', () => {
+    if (window.innerWidth > 768 && navMenu && navMenu.classList.contains('active')) {
+        navMenu.classList.remove('active');
+        if (hamburger) {
+            hamburger.classList.remove('active');
+        }
+        body.style.overflow = '';
+    }
 });
 
 // Navigation active au scroll
@@ -184,7 +214,7 @@ document.querySelectorAll('.stat-item').forEach(stat => {
 });
 
 
-// Animation d'apparition pour les technologies
+// Animation subtile pour les technologies
 const techList = document.querySelector('.tech-list');
 if (techList) {
     const techObserver = new IntersectionObserver((entries) => {
@@ -195,35 +225,36 @@ if (techList) {
                     setTimeout(() => {
                         span.style.opacity = '1';
                         span.style.transform = 'translateY(0)';
-                    }, index * 100);
+                    }, index * 30); // Réduit le délai pour un effet plus rapide
                 });
                 techObserver.unobserve(entry.target);
             }
         });
-    }, { threshold: 0.5 });
+    }, { threshold: 0.3 }); // Se déclenche plus tôt
 
     techObserver.observe(techList);
     
-    // Initialiser les styles
+    // Initialiser les styles avec une animation plus subtile
     techList.querySelectorAll('span').forEach(span => {
         span.style.opacity = '0';
-        span.style.transform = 'translateY(20px)';
-        span.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        span.style.transform = 'translateY(10px)'; // Moins de déplacement
+        span.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
     });
 }
 
-// Effet parallaxe léger pour la section hero
+// Effet parallaxe léger pour la section hero (désactivé sur mobile)
 window.addEventListener('scroll', () => {
-    const scrolled = window.pageYOffset;
-    const hero = document.querySelector('.hero');
-    if (hero && scrolled < window.innerHeight) {
-        const heroContent = hero.querySelector('.hero-content');
-        const heroImage = hero.querySelector('.hero-image');
-        if (heroContent && heroImage) {
-            heroContent.style.transform = `translateY(${scrolled * 0.3}px)`;
-            heroImage.style.transform = `translateY(${scrolled * 0.2}px)`;
+    // Désactiver le parallaxe sur mobile pour de meilleures performances
+    if (window.innerWidth > 768) {
+        const scrolled = window.pageYOffset;
+        const hero = document.querySelector('.hero');
+        if (hero && scrolled < window.innerHeight) {
+            const heroContent = hero.querySelector('.hero-content');
+            const heroImage = hero.querySelector('.hero-image');
+            if (heroContent && heroImage) {
+                heroContent.style.transform = `translateY(${scrolled * 0.2}px)`;
+                heroImage.style.transform = `translateY(${scrolled * 0.15}px)`;
+            }
         }
     }
 });
-
-console.log('Portfolio chargé avec succès ! 🚀');
